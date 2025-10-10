@@ -25,10 +25,7 @@ export default function Home() {
         <ul className="list-disc list-inside space-y-2">
           {pages.map((p) => (
             <li key={p.id}>
-              <a
-                className="text-blue-600 hover:underline"
-                href={`${BASE_URL}/${p.slug}`}
-              >
+              <a className="text-blue-600 hover:underline" href={`#/${p.slug}`}>
                 {p.title.rendered}
               </a>
             </li>
