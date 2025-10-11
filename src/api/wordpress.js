@@ -2,7 +2,9 @@ const WP_BASE =
   "https://public-api.wordpress.com/wp/v2/sites/npaulo84-fswoq.wordpress.com";
 
 export async function getPages() {
-  const res = await fetch(`${WP_BASE}/pages?status=publish&per_page=50`);
+  const res = await fetch(
+    `${WP_BASE}/pages?status=publish&per_page=50&orderby=menu_order&order=asc`
+  );
   if (!res.ok) throw new Error("Erro ao carregar páginas");
   return res.json();
 }

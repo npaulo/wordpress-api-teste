@@ -3,7 +3,7 @@ import Home from "./pages/Home.jsx";
 import News from "./pages/News.jsx";
 import PageView, { pageLoader } from "./pages/PageView.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import { BASE_URL } from "./constants.js";
+import Menu from "./components/Menu.jsx";
 
 const router = createHashRouter([
   { path: "/", element: <Home /> },
@@ -13,5 +13,10 @@ const router = createHashRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <Menu />
+      <RouterProvider router={router} />
+    </>
+  );
 }
