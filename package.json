@@ -11,7 +11,10 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "@fontsource/open-sans": "^5.2.7",
+    "@fontsource/poppins": "^5.2.7",
     "@tailwindcss/vite": "^4.1.14",
+    "lucide-react": "^0.545.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
