@@ -48,10 +48,10 @@ const Menu = forwardRef(function Menu(_, ref) {
       ref={navRef}
       className="bg-[#f9fafc] text-[#0a4f7d] border-b border-[#e4e8ef] shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-500"
     >
-      {/* Overlay com blur e fade (mobile) */}
+      {/* Overlay com blur (fica abaixo da navbar) */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-40 md:hidden transition-opacity duration-300 opacity-100"
+          className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-30 md:hidden transition-opacity duration-300 opacity-100"
           onClick={() => setOpen(false)}
         />
       )}
@@ -80,7 +80,7 @@ const Menu = forwardRef(function Menu(_, ref) {
         <ul
           className={[
             open
-              ? "block absolute top-full left-0 w-full bg-[#f9fafc] shadow-md z-50 animate-slide-down"
+              ? "block fixed top-[72px] left-0 w-full h-[calc(100vh-72px)] bg-[#f9fafc] overflow-y-auto shadow-md z-40 animate-slide-down pb-10"
               : "hidden",
             "md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none md:z-auto",
             "overflow-hidden transition-all duration-500 ease-in-out text-lg font-medium tracking-wide mb-0",
