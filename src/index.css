@@ -1,3 +1,34 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 @import "./theme.css";
+
+
+/* ---------- Ajustes globais ---------- */
+
+/* Fundo geral suave */
+body {
+  background-color: #f9fafc;
+}
+
+/* Transição entre secções */
+section {
+  scroll-margin-top: 5rem;
+}
+
+/* Botões primários e secundários */
+.btn {
+  @apply inline-block px-6 py-3 rounded-lg font-medium transition;
+}
+
+.btn-primary {
+  @apply bg-[#0b74b6] text-white hover:bg-[#095f95];
+}
+
+.btn-outline {
+  @apply border border-[#0b74b6] text-[#0b74b6] hover:bg-[#e6f4ff];
+}
+
+/* Links decorativos */
+a {
+  text-decoration: none;
+}

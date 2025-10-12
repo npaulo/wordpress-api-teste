@@ -1,37 +1,58 @@
 import { useEffect, useState } from "react";
-import { getPages } from "../api/wordpress.js";
-import { BASE_URL } from "../constants.js";
+import { getPageBySlug, getPagesByParent } from "../api/wordpress";
+import HeroSection from "../components/HeroSection";
+import AboutSection from "../components/AboutSection";
+import ServicesSection from "../components/ServicesSection";
+import JoinSection from "../components/JoinSection";
+import DefaultSection from "../components/DefaultSection";
 
 export default function Home() {
-  const [pages, setPages] = useState([]);
+  const [sections, setSections] = useState([]);
 
   useEffect(() => {
-    getPages().then(setPages);
+    async function loadHomeSections() {
+      // 1️⃣ Buscar a página principal "Home"
+      const home = await getPageBySlug("home");
+      if (!home?.id) return;
+
+      // 2️⃣ Buscar as páginas-filhas (seções)
+      const children = await getPagesByParent(home.id);
+      // 3️⃣ Ordenar conforme o menu_order
+      const ordered = children.sort((a, b) => a.menu_order - b.menu_order);
+      setSections(ordered);
+    }
+
+    loadHomeSections();
   }, []);
 
-  return (
-    <div className="max-w-3xl mx-auto p-6">
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-blue-600">Pais Coragem</h1>
-        <p className="mt-2 text-lg text-gray-700">
-          A apoiar famílias na jornada do luto e da perda gestacional.
-        </p>
-      </header>
+  if (!sections.length) {
+    return (
+      <div className="flex justify-center items-center h-[50vh] text-gray-500">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-          Explorar páginas
-        </h2>
-        <ul className="list-disc list-inside space-y-2">
-          {pages.map((p) => (
-            <li key={p.id}>
-              <a className="text-blue-600 hover:underline" href={`#/${p.slug}`}>
-                {p.title.rendered}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+  // Mapa slug → componente React
+  const sectionMap = {
+    hero: HeroSection,
+    "quem-somos": AboutSection,
+    servicos: ServicesSection,
+    participar: JoinSection,
+  };
+
+  return (
+    <main>
+      {sections.map((section) => {
+        const Component = sectionMap[section.slug] || DefaultSection;
+        return (
+          <Component
+            key={section.id}
+            title={section.title.rendered}
+            content={section.content.rendered}
+          />
+        );
+      })}
+    </main>
   );
 }

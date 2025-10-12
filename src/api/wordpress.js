@@ -21,3 +21,12 @@ export async function getPageBySlug(slug) {
   const data = await cachedFetch(`page_${slug}`, url, { ttl: 10 * 60 * 1000 });
   return data[0];
 }
+
+/**
+ * Obtém as páginas-filhas de uma página (ex: seções da Home)
+ * ordenadas pela ordem definida no painel (menu_order)
+ */
+export async function getPagesByParent(parentId) {
+  const url = `${WP_BASE}/pages?parent=${parentId}&orderby=menu_order&order=asc&per_page=50`;
+  return cachedFetch(`pages_parent_${parentId}`, url, { ttl: 10 * 60 * 1000 });
+}
