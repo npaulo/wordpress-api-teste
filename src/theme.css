@@ -43,6 +43,11 @@
     @apply rounded-xl shadow-soft max-w-full h-auto;
   }
 
+  nav ul {
+    margin: 0;
+    padding: 0;
+  }
+
   .logo {
     border-radius: 0 !important;
     box-shadow: none !important;
