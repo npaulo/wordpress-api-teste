@@ -7,13 +7,10 @@ const Menu = forwardRef(function Menu(_, ref) {
   const [open, setOpen] = useState(false);
   const navRef = useRef(null);
 
-  // Permitir que o ref externo aceda ao <nav>
+  // Passar ref externo ao <nav>
   useEffect(() => {
-    if (typeof ref === "function") {
-      ref(navRef.current);
-    } else if (ref) {
-      ref.current = navRef.current;
-    }
+    if (typeof ref === "function") ref(navRef.current);
+    else if (ref) ref.current = navRef.current;
   }, [ref]);
 
   // Fechar menu ao clicar fora
@@ -49,7 +46,7 @@ const Menu = forwardRef(function Menu(_, ref) {
   return (
     <nav
       ref={navRef}
-      className="bg-primary text-neutral shadow-md fixed top-0 left-0 right-0 z-50"
+      className="bg-[#084a7a] bg-gradient-to-b from-[#084a7a] to-[#0b6ead] text-white shadow-md fixed top-0 left-0 right-0 z-50 border-b border-white/10 transition-all duration-500"
     >
       {/* Overlay com blur e fade */}
       {open && (
@@ -61,21 +58,18 @@ const Menu = forwardRef(function Menu(_, ref) {
 
       {/* Navbar container */}
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4 md:px-10 relative z-50">
-        {/* Logo / Nome */}
-        <a
-          href="/"
-          className="font-sans font-semibold text-2xl tracking-tight flex items-center gap-2 hover:text-secondary transition-colors"
-        >
+        {/* Logotipo */}
+        <a href="/" className="flex items-center gap-2">
           <img
             src="./logotipo.png"
             alt="Pais Coragem"
-            className="logo h-8 md:h-10 w-auto object-contain"
+            className="logo h-11 md:h-12 w-auto object-contain ml-1 animate-fade-in hover:opacity-90 transition-opacity duration-200"
           />
         </a>
 
         {/* Botão mobile */}
         <button
-          className="md:hidden text-neutral"
+          className="md:hidden text-white"
           onClick={() => setOpen((prev) => !prev)}
           aria-label={open ? "Fechar menu" : "Abrir menu"}
         >
@@ -90,7 +84,7 @@ const Menu = forwardRef(function Menu(_, ref) {
                 ? "max-h-[600px] opacity-100 absolute top-full left-0 w-full bg-primary shadow-lg"
                 : "max-h-0 opacity-0 md:max-h-none md:opacity-100"
             }
-            md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none text-lg font-medium
+            md:static md:flex md:items-center md:gap-6 md:bg-transparent md:shadow-none text-lg font-medium tracking-wide
           `}
         >
           {menu.map((item) => (
@@ -98,7 +92,7 @@ const Menu = forwardRef(function Menu(_, ref) {
               <a
                 href={`#/${item.slug}`}
                 onClick={() => setOpen(false)}
-                className="block py-3 px-6 md:px-0 text-neutral hover:text-secondary transition-colors"
+                className="relative block py-3 px-6 md:px-0 text-white hover:text-white/90 hover:scale-[1.02] transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-1 after:w-0 after:h-[2px] after:bg-white/70 hover:after:w-full after:transition-all after:duration-300"
                 dangerouslySetInnerHTML={{ __html: item.title.rendered }}
               />
 
@@ -106,7 +100,7 @@ const Menu = forwardRef(function Menu(_, ref) {
               {item.children.length > 0 && (
                 <ul
                   className={`
-                    md:absolute md:left-0 md:mt-3 md:bg-white md:text-text md:rounded-2xl md:shadow-xl md:p-3
+                    md:absolute md:left-0 md:mt-3 md:bg-white md:text-[#0a2a43] md:rounded-2xl md:shadow-card md:p-3
                     md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible
                     md:transition-all md:duration-300 md:ease-out md:transform md:-translate-y-2 md:group-hover:translate-y-0
                     md:min-w-[240px] z-50
@@ -122,7 +116,7 @@ const Menu = forwardRef(function Menu(_, ref) {
                       <a
                         href={`#/${child.slug}`}
                         onClick={() => setOpen(false)}
-                        className="block py-2 px-4 rounded-lg text-text/90 hover:text-primary hover:bg-muted transition-colors duration-200"
+                        className="block py-2 px-4 rounded-lg text-[#0a2a43] hover:text-primary hover:bg-muted transition-colors duration-200"
                         dangerouslySetInnerHTML={{
                           __html: child.title.rendered,
                         }}
