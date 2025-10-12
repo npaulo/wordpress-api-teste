@@ -48,7 +48,7 @@ const Menu = forwardRef(function Menu(_, ref) {
       ref={navRef}
       className="bg-[#f9fafc] text-[#0a4f7d] border-b border-[#e4e8ef] shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-500"
     >
-      {/* Overlay com blur e fade */}
+      {/* Overlay com blur e fade (mobile) */}
       {open && (
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-40 md:hidden transition-opacity duration-300 opacity-100"
@@ -57,7 +57,7 @@ const Menu = forwardRef(function Menu(_, ref) {
       )}
 
       {/* Navbar container */}
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-5 md:px-10 relative z-50">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-5 md:px-10 relative z-50 gap-4 sm:gap-8 lg:gap-12">
         {/* Logotipo */}
         <a href="/" className="flex items-center gap-2">
           <img
@@ -67,9 +67,9 @@ const Menu = forwardRef(function Menu(_, ref) {
           />
         </a>
 
-        {/* Botão mobile */}
+        {/* Botão mobile (à direita) */}
         <button
-          className="md:hidden text-[#0a4f7d]"
+          className="ml-auto md:hidden text-[#0a4f7d]"
           onClick={() => setOpen((prev) => !prev)}
           aria-label={open ? "Fechar menu" : "Abrir menu"}
         >
@@ -78,14 +78,13 @@ const Menu = forwardRef(function Menu(_, ref) {
 
         {/* Menu principal */}
         <ul
-          className={`animate-slide-down overflow-hidden md:overflow-visible transition-all duration-500 ease-in-out
-            ${
-              open
-                ? "max-h-[600px] opacity-100 absolute top-full left-0 w-full bg-[#f9fafc] shadow-md"
-                : "max-h-0 opacity-0 md:max-h-none md:opacity-100"
-            }
-            md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none text-lg font-medium tracking-wide mb-0
-          `}
+          className={[
+            open
+              ? "block absolute top-full left-0 w-full bg-[#f9fafc] shadow-md z-50 animate-slide-down"
+              : "hidden",
+            "md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none md:z-auto",
+            "overflow-hidden transition-all duration-500 ease-in-out text-lg font-medium tracking-wide mb-0",
+          ].join(" ")}
         >
           {menu.map((item) => (
             <li key={item.id} className="group relative md:py-2 list-none mb-0">
@@ -99,20 +98,17 @@ const Menu = forwardRef(function Menu(_, ref) {
               {/* Submenu profissional */}
               {item.children.length > 0 && (
                 <ul
-                  className={`
-                    md:absolute md:left-0 md:mt-4 
-                    md:bg-white/95 md:backdrop-blur-sm md:text-[#0a2a43] 
-                    md:rounded-2xl md:shadow-xl md:border md:border-[#e8edf5]
-                    md:p-2
-                    md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible
-                    md:transition-all md:duration-300 md:ease-out md:transform md:-translate-y-2 md:group-hover:translate-y-0
-                    md:min-w-[260px] z-50
-                    ${
-                      open
-                        ? "pl-8 border-l border-[#0b74b6]/30 md:border-0 md:pl-0"
-                        : ""
-                    }
-                  `}
+                  className={[
+                    "md:absolute md:left-0 md:mt-4 md:min-w-[260px]",
+                    "md:bg-white/95 md:backdrop-blur-sm md:text-[#0a2a43]",
+                    "md:rounded-2xl md:shadow-xl md:border md:border-[#e8edf5] md:p-2",
+                    "md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible",
+                    "md:transition-all md:duration-300 md:ease-out md:transform md:-translate-y-2 md:group-hover:translate-y-0",
+                    "z-50",
+                    open
+                      ? "pl-8 border-l border-[#0b74b6]/30 md:border-0 md:pl-0"
+                      : "",
+                  ].join(" ")}
                 >
                   {item.children.map((child) => (
                     <li key={child.id} className="list-none">
