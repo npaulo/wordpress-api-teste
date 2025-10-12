@@ -59,7 +59,7 @@ const Menu = forwardRef(function Menu(_, ref) {
       {/* Navbar container */}
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-5 md:px-10 relative z-50">
         {/* Logotipo */}
-        <a href="/" className="flex items-center gap-2 mr-4">
+        <a href="/" className="flex items-center gap-2">
           <img
             src="./logotipo.png"
             alt="Pais Coragem"
@@ -84,11 +84,11 @@ const Menu = forwardRef(function Menu(_, ref) {
                 ? "max-h-[600px] opacity-100 absolute top-full left-0 w-full bg-[#f9fafc] shadow-md"
                 : "max-h-0 opacity-0 md:max-h-none md:opacity-100"
             }
-            md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none text-lg font-medium tracking-wide
+            md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none text-lg font-medium tracking-wide mb-0
           `}
         >
           {menu.map((item) => (
-            <li key={item.id} className="group relative md:py-2 list-none">
+            <li key={item.id} className="group relative md:py-2 list-none mb-0">
               <a
                 href={`#/${item.slug}`}
                 onClick={() => setOpen(false)}
@@ -96,14 +96,17 @@ const Menu = forwardRef(function Menu(_, ref) {
                 dangerouslySetInnerHTML={{ __html: item.title.rendered }}
               />
 
-              {/* Submenu */}
+              {/* Submenu profissional */}
               {item.children.length > 0 && (
                 <ul
                   className={`
-                    md:absolute md:left-0 md:mt-3 md:bg-white md:text-[#0a2a43] md:rounded-2xl md:shadow-card md:p-3
+                    md:absolute md:left-0 md:mt-4 
+                    md:bg-white/95 md:backdrop-blur-sm md:text-[#0a2a43] 
+                    md:rounded-2xl md:shadow-xl md:border md:border-[#e8edf5]
+                    md:p-2
                     md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible
                     md:transition-all md:duration-300 md:ease-out md:transform md:-translate-y-2 md:group-hover:translate-y-0
-                    md:min-w-[240px] z-50
+                    md:min-w-[260px] z-50
                     ${
                       open
                         ? "pl-8 border-l border-[#0b74b6]/30 md:border-0 md:pl-0"
@@ -116,7 +119,7 @@ const Menu = forwardRef(function Menu(_, ref) {
                       <a
                         href={`#/${child.slug}`}
                         onClick={() => setOpen(false)}
-                        className="block py-2 px-4 rounded-lg text-[#0a2a43] hover:text-[#0b74b6] hover:bg-muted transition-colors duration-200"
+                        className="block py-2.5 px-5 rounded-lg text-sm text-[#0a2a43] hover:text-[#0b74b6] hover:bg-[#f2f7ff] transition-all duration-200 ease-out"
                         dangerouslySetInnerHTML={{
                           __html: child.title.rendered,
                         }}
