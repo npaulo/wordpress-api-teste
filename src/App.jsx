@@ -3,7 +3,7 @@ import Home from "./pages/Home.jsx";
 import News from "./pages/News.jsx";
 import PageView, { pageLoader } from "./pages/PageView.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import Menu from "./components/Menu.jsx";
+import Layout from "./components/Layout.jsx";
 
 const router = createHashRouter([
   { path: "/", element: <Home /> },
@@ -14,9 +14,8 @@ const router = createHashRouter([
 
 export default function App() {
   return (
-    <>
-      <Menu />
+    <Layout>
       <RouterProvider router={router} />
-    </>
+    </Layout>
   );
 }

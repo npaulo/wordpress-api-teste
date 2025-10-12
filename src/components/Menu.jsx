@@ -1,16 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+import { forwardRef, useEffect, useState, useRef } from "react";
 import { getPages } from "../api/wordpress";
 import { Menu as MenuIcon, X as CloseIcon } from "lucide-react";
 
-export default function Menu() {
+const Menu = forwardRef(function Menu(_, ref) {
   const [menu, setMenu] = useState([]);
   const [open, setOpen] = useState(false);
-  const menuRef = useRef(null);
+  const navRef = useRef(null);
+
+  // Permite que o ref externo aceda à <nav>
+  useEffect(() => {
+    if (typeof ref === "function") {
+      ref(navRef.current);
+    } else if (ref) {
+      ref.current = navRef.current;
+    }
+  }, [ref]);
 
   // Fechar menu ao clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (navRef.current && !navRef.current.contains(event.target)) {
         setOpen(false);
       }
     }
@@ -38,7 +47,10 @@ export default function Menu() {
   }, []);
 
   return (
-    <nav ref={menuRef} className="bg-primary text-neutral shadow-md relative">
+    <nav
+      ref={navRef}
+      className="bg-primary text-neutral shadow-md fixed top-0 left-0 right-0 z-50"
+    >
       {/* Overlay com blur e fade */}
       {open && (
         <div
@@ -47,11 +59,22 @@ export default function Menu() {
         />
       )}
 
-      {/* Header + botão mobile */}
-      <div className="flex items-center justify-between px-6 py-4 md:px-10 relative z-50">
-        <a href="/" className="font-sans font-semibold text-xl">
-          Pais Coragem
+      {/* Navbar container */}
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4 md:px-10 relative z-50">
+        {/* Logo / Nome */}
+        <a
+          href="/"
+          className="font-sans font-semibold text-2xl tracking-tight flex items-center gap-2 hover:text-secondary transition-colors"
+        >
+          <img
+            src="/logo.svg"
+            alt="Pais Coragem"
+            className="w-8 h-8 md:w-10 md:h-10"
+          />
+          <span className="hidden sm:inline-block">Pais Coragem</span>
         </a>
+
+        {/* Botão mobile */}
         <button
           className="md:hidden text-neutral"
           onClick={() => setOpen((prev) => !prev)}
@@ -59,57 +82,59 @@ export default function Menu() {
         >
           {open ? <CloseIcon size={28} /> : <MenuIcon size={28} />}
         </button>
-      </div>
 
-      {/* Menu principal */}
-      <ul
-        className={`animate-slide-down overflow-hidden md:overflow-visible transition-all duration-500 ease-in-out
-          ${
-            open
-              ? "max-h-[600px] opacity-100 z-50 relative"
-              : "max-h-0 opacity-0 md:max-h-none md:opacity-100"
-          }
-          md:flex md:items-center md:gap-8 px-6 pb-4 md:px-10 md:pb-0
-        `}
-      >
-        {menu.map((item) => (
-          <li key={item.id} className="group relative md:py-2">
-            <a
-              href={`#/${item.slug}`}
-              onClick={() => setOpen(false)}
-              className="block py-2 text-neutral hover:text-secondary font-medium transition-colors"
-            >
-              {item.title.rendered}
-            </a>
-
-            {/* Submenu */}
-            {item.children.length > 0 && (
-              <ul
-                className={`
-                  md:absolute md:left-0 md:mt-2 md:bg-white md:text-text md:rounded-xl md:shadow-md md:p-2 md:hidden md:group-hover:block md:min-w-[180px] z-50
-                  ${
-                    open
-                      ? "pl-4 border-l border-secondary/30 md:border-0 md:pl-0"
-                      : ""
-                  }
-                `}
+        {/* Menu principal */}
+        <ul
+          className={`animate-slide-down overflow-hidden md:overflow-visible transition-all duration-500 ease-in-out
+            ${
+              open
+                ? "max-h-[600px] opacity-100 absolute top-full left-0 w-full bg-primary shadow-lg"
+                : "max-h-0 opacity-0 md:max-h-none md:opacity-100"
+            }
+            md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none text-lg font-medium
+          `}
+        >
+          {menu.map((item) => (
+            <li key={item.id} className="group relative md:py-2 list-none">
+              <a
+                href={`#/${item.slug}`}
+                onClick={() => setOpen(false)}
+                className="block py-3 px-6 md:px-0 text-neutral hover:text-secondary transition-colors"
               >
-                {item.children.map((child) => (
-                  <li key={child.id}>
-                    <a
-                      href={`#/${child.slug}`}
-                      onClick={() => setOpen(false)}
-                      className="block py-2 md:px-4 md:py-2 rounded hover:text-secondary md:hover:bg-muted transition"
-                    >
-                      {child.title.rendered}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
+                {item.title.rendered}
+              </a>
+
+              {/* Submenu */}
+              {item.children.length > 0 && (
+                <ul
+                  className={`
+                    md:absolute md:left-0 md:mt-3 md:bg-white md:text-text md:rounded-xl md:shadow-md md:p-2 md:hidden md:group-hover:block md:min-w-[200px] z-50
+                    ${
+                      open
+                        ? "pl-8 border-l border-secondary/30 md:border-0 md:pl-0"
+                        : ""
+                    }
+                  `}
+                >
+                  {item.children.map((child) => (
+                    <li key={child.id} className="list-none">
+                      <a
+                        href={`#/${child.slug}`}
+                        onClick={() => setOpen(false)}
+                        className="block py-2 px-4 rounded hover:bg-muted hover:text-primary transition"
+                      >
+                        {child.title.rendered}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
-}
+});
+
+export default Menu;
