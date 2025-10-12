@@ -42,6 +42,11 @@
   img {
     @apply rounded-xl shadow-soft max-w-full h-auto;
   }
+
+  .logo {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
 }
 
 /* ---------- Componentes ---------- */
