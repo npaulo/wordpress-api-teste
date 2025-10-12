@@ -1,7 +1,5 @@
 import { cachedFetch } from "../utils/cache";
-
-const WP_BASE =
-  "https://public-api.wordpress.com/wp/v2/sites/npaulo84-fswoq.wordpress.com";
+import { WP_BASE } from "./constants";
 
 // 🔹 Páginas (ordenadas)
 export async function getPages() {
@@ -27,6 +25,15 @@ export async function getPageBySlug(slug) {
  * ordenadas pela ordem definida no painel (menu_order)
  */
 export async function getPagesByParent(parentId) {
-  const url = `${WP_BASE}/pages?parent=${parentId}&orderby=menu_order&order=asc&per_page=50`;
-  return cachedFetch(`pages_parent_${parentId}`, url, { ttl: 10 * 60 * 1000 });
+  const url = `${WP_BASE}/pages?parent=${parentId}&orderby=menu_order&order=asc&per_page=50&_embed`;
+  return cachedFetch(`pages_parent_${parentId}`, url, {
+    ttl: 10 * 60 * 1000,
+  }).then((data) => {
+    // Inclui featured_image_url também nas filhas (caso existam)
+    data.forEach((page) => {
+      page.featured_image_url =
+        page._embedded?.["wp:featuredmedia"]?.[0]?.source_url || null;
+    });
+    return data;
+  });
 }

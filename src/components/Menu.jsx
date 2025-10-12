@@ -39,7 +39,10 @@ const Menu = forwardRef(function Menu(_, ref) {
         }
       });
 
-      setMenu(roots);
+      // 🔹 Filtra para remover a página "Home"
+      const filtered = roots.filter((page) => page.slug !== "home");
+
+      setMenu(filtered);
     });
   }, []);
 

@@ -3,6 +3,8 @@
  * Uses sessionStorage and supports TTL + network fallback.
  */
 
+import { WP_BASE } from "../api/constants";
+
 export async function cachedFetch(key, url, { ttl = 600000 } = {}) {
   // ttl padrão = 10 minutos
   const cacheKey = `cache_${key}`;

@@ -11,17 +11,13 @@ export default function Home() {
 
   useEffect(() => {
     async function loadHomeSections() {
-      // 1️⃣ Buscar a página principal "Home"
       const home = await getPageBySlug("home");
       if (!home?.id) return;
 
-      // 2️⃣ Buscar as páginas-filhas (seções)
       const children = await getPagesByParent(home.id);
-      // 3️⃣ Ordenar conforme o menu_order
       const ordered = children.sort((a, b) => a.menu_order - b.menu_order);
       setSections(ordered);
     }
-
     loadHomeSections();
   }, []);
 
@@ -33,7 +29,6 @@ export default function Home() {
     );
   }
 
-  // Mapa slug → componente React
   const sectionMap = {
     hero: HeroSection,
     "quem-somos": AboutSection,
@@ -42,7 +37,7 @@ export default function Home() {
   };
 
   return (
-    <main>
+    <main className="animate-fade-in space-y-24">
       {sections.map((section) => {
         const Component = sectionMap[section.slug] || DefaultSection;
         return (
@@ -50,6 +45,7 @@ export default function Home() {
             key={section.id}
             title={section.title.rendered}
             content={section.content.rendered}
+            featured_image_url={section.featured_image_url}
           />
         );
       })}
