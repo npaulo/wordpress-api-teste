@@ -1,11 +1,13 @@
 import { forwardRef, useEffect, useState, useRef } from "react";
 import { getPages } from "../api/wordpress";
 import { Menu as MenuIcon, X as CloseIcon } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Menu = forwardRef(function Menu(_, ref) {
   const [menu, setMenu] = useState([]);
   const [open, setOpen] = useState(false);
   const navRef = useRef(null);
+  const location = useLocation();
 
   // Passar ref externo ao <nav>
   useEffect(() => {
@@ -39,12 +41,25 @@ const Menu = forwardRef(function Menu(_, ref) {
         }
       });
 
-      // 🔹 Filtra para remover a página "Home"
+      // Remover "home" do menu
       const filtered = roots.filter((page) => page.slug !== "home");
-
       setMenu(filtered);
     });
   }, []);
+
+  // Slug ativo com HashRouter (pathname já vem depois de #)
+  const activeSlug = location.pathname.replace(/^\//, ""); // "" na página inicial
+
+  // Helper: verifica recursivamente se algum descendente tem o slug ativo
+  const hasDescendantWithSlug = (node, slug) => {
+    if (!node?.children?.length) return false;
+    for (const child of node.children) {
+      if (child.slug === slug) return true;
+      if (child.children?.length && hasDescendantWithSlug(child, slug))
+        return true;
+    }
+    return false;
+  };
 
   return (
     <nav
@@ -86,54 +101,75 @@ const Menu = forwardRef(function Menu(_, ref) {
               ? "block fixed top-[72px] left-0 w-full h-[calc(100vh-72px)] bg-[#f9fafc] overflow-y-auto shadow-md z-40 animate-slide-down pb-10"
               : "hidden",
             "md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none md:z-auto",
-            // 🔹 Corrigido: overflow agora é visível para mostrar hover underline
             "overflow-visible transition-all duration-500 ease-in-out text-lg font-medium tracking-wide mb-0",
           ].join(" ")}
         >
-          {menu.map((item) => (
-            <li
-              key={item.id}
-              className="group relative md:py-2 list-none mb-0 overflow-visible"
-            >
-              <a
-                href={`#/${item.slug}`}
-                onClick={() => setOpen(false)}
-                className="relative block py-3 px-6 md:px-0 text-[#0a4f7d] hover:text-[#0b74b6] hover:scale-[1.02] transition-all duration-300 
-                after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-[#0b74b6] hover:after:w-full after:transition-all after:duration-300"
-                dangerouslySetInnerHTML={{ __html: item.title.rendered }}
-              />
+          {menu.map((item) => {
+            // Pai fica ativo se: o slug atual é o dele OU algum descendente tem o slug atual
+            const isParentActive =
+              activeSlug === item.slug ||
+              hasDescendantWithSlug(item, activeSlug);
 
-              {/* Submenu profissional */}
-              {item.children.length > 0 && (
-                <ul
+            return (
+              <li
+                key={item.id}
+                className="group relative md:py-2 list-none mb-0 overflow-visible"
+              >
+                <a
+                  href={`#/${item.slug}`}
+                  onClick={() => setOpen(false)}
                   className={[
-                    "md:absolute md:left-0 md:mt-4 md:min-w-[260px]",
-                    "md:bg-white/95 md:backdrop-blur-sm md:text-[#0a2a43]",
-                    "md:rounded-2xl md:shadow-xl md:border md:border-[#e8edf5] md:p-2",
-                    "md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible",
-                    "md:transition-all md:duration-300 md:ease-out md:transform md:-translate-y-2 md:group-hover:translate-y-0",
-                    "z-50",
-                    open
-                      ? "pl-8 border-l border-[#0b74b6]/30 md:border-0 md:pl-0"
-                      : "",
+                    "relative block py-3 px-6 md:px-0 transition-all duration-300 rounded-lg",
+                    "hover:text-[#0b74b6] hover:scale-[1.02] hover:bg-[#e6f4ff]/40",
+                    isParentActive
+                      ? "text-[#0b74b6] after:w-full"
+                      : "text-[#0a4f7d] after:w-0",
+                    "after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:bg-[#0b74b6] after:transition-all after:duration-300",
                   ].join(" ")}
-                >
-                  {item.children.map((child) => (
-                    <li key={child.id} className="list-none">
-                      <a
-                        href={`#/${child.slug}`}
-                        onClick={() => setOpen(false)}
-                        className="block py-2.5 px-5 rounded-lg text-sm text-[#0a2a43] hover:text-[#0b74b6] hover:bg-[#f2f7ff] transition-all duration-200 ease-out"
-                        dangerouslySetInnerHTML={{
-                          __html: child.title.rendered,
-                        }}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
+                  dangerouslySetInnerHTML={{ __html: item.title.rendered }}
+                />
+
+                {/* Submenu */}
+                {item.children.length > 0 && (
+                  <ul
+                    className={[
+                      "md:absolute md:left-0 md:mt-4 md:min-w-[260px]",
+                      "md:bg-white/95 md:backdrop-blur-sm md:text-[#0a2a43]",
+                      "md:rounded-2xl md:shadow-xl md:border md:border-[#e8edf5] md:p-2",
+                      "md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible",
+                      "md:transition-all md:duration-300 md:ease-out md:transform md:-translate-y-2 md:group-hover:translate-y-0",
+                      "z-50",
+                      open
+                        ? "pl-8 border-l border-[#0b74b6]/30 md:border-0 md:pl-0"
+                        : "",
+                    ].join(" ")}
+                  >
+                    {item.children.map((child) => {
+                      const isChildActive = activeSlug === child.slug;
+
+                      return (
+                        <li key={child.id} className="list-none">
+                          <a
+                            href={`#/${child.slug}`}
+                            onClick={() => setOpen(false)}
+                            className={[
+                              "block py-2.5 px-5 rounded-lg text-sm transition-all duration-200 ease-out",
+                              isChildActive
+                                ? "text-[#0b74b6] bg-[#f2f7ff] font-semibold"
+                                : "text-[#0a2a43] hover:text-[#0b74b6] hover:bg-[#f2f7ff]",
+                            ].join(" ")}
+                            dangerouslySetInnerHTML={{
+                              __html: child.title.rendered,
+                            }}
+                          />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>
