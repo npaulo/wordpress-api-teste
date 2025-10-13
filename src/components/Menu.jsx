@@ -1,11 +1,15 @@
+// src/components/Menu.jsx
 import { forwardRef, useEffect, useState, useRef } from "react";
 import { getPages } from "../api/wordpress";
 import { Menu as MenuIcon, X as CloseIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
+const SCROLL_COMPACT_THRESHOLD = 12; // px – sensibilidade para encolher o header
+
 const Menu = forwardRef(function Menu(_, ref) {
   const [menu, setMenu] = useState([]);
   const [open, setOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
   const navRef = useRef(null);
   const location = useLocation();
 
@@ -14,6 +18,17 @@ const Menu = forwardRef(function Menu(_, ref) {
     if (typeof ref === "function") ref(navRef.current);
     else if (ref) ref.current = navRef.current;
   }, [ref]);
+
+  // Compact header ao fazer scroll
+  useEffect(() => {
+    const onScroll = () => {
+      const shouldCompact = window.scrollY > SCROLL_COMPACT_THRESHOLD;
+      setCompact((prev) => (prev !== shouldCompact ? shouldCompact : prev));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Fechar menu ao clicar fora
   useEffect(() => {
@@ -64,9 +79,15 @@ const Menu = forwardRef(function Menu(_, ref) {
   return (
     <nav
       ref={navRef}
-      className="bg-[#f9fafc] text-[#0a4f7d] border-b border-[#e4e8ef] shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+      className={[
+        "fixed top-0 left-0 right-0 z-50 border-b border-[#e4e8ef]",
+        "bg-[#f9fafc]/90 backdrop-blur-[2px]",
+        "transition-all duration-300 ease-out",
+        compact ? "shadow-lg" : "shadow-sm",
+      ].join(" ")}
+      aria-label="Principal"
     >
-      {/* Overlay com blur (fica abaixo da navbar) */}
+      {/* Overlay com blur (abaixo da navbar em mobile) */}
       {open && (
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-30 md:hidden transition-opacity duration-300 opacity-100"
@@ -75,17 +96,26 @@ const Menu = forwardRef(function Menu(_, ref) {
       )}
 
       {/* Navbar container */}
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-5 md:px-10 relative z-50 gap-4 sm:gap-8 lg:gap-12">
+      <div
+        className={[
+          "max-w-6xl mx-auto flex items-center justify-between px-6 md:px-10 relative z-50 gap-4 sm:gap-8 lg:gap-12",
+          "transition-all duration-300",
+          compact ? "py-2" : "py-5",
+        ].join(" ")}
+      >
         {/* Logotipo */}
-        <a href="/" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-3">
           <img
             src="./logotipo.png"
             alt="Pais Coragem"
-            className="logo h-12 w-auto object-contain"
+            className={[
+              "logo object-contain transition-all duration-300",
+              compact ? "h-10 w-auto" : "h-12 w-auto",
+            ].join(" ")}
           />
         </a>
 
-        {/* Botão mobile (à direita) */}
+        {/* Botão mobile */}
         <button
           className="ml-auto md:hidden text-[#0a4f7d]"
           onClick={() => setOpen((prev) => !prev)}
@@ -98,14 +128,14 @@ const Menu = forwardRef(function Menu(_, ref) {
         <ul
           className={[
             open
-              ? "block fixed top-[72px] left-0 w-full h-[calc(100vh-72px)] bg-[#f9fafc] overflow-y-auto shadow-md z-40 animate-slide-down pb-10"
+              ? "block fixed left-0 w-full h-[calc(100vh-72px)] bg-[#f9fafc] overflow-y-auto shadow-md z-40 animate-slide-down pb-10"
               : "hidden",
+            compact ? "top-[56px]" : "top-[72px]",
             "md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none md:z-auto",
-            "overflow-visible transition-all duration-500 ease-in-out text-lg font-medium tracking-wide mb-0",
+            "overflow-visible transition-all duration-300 ease-in-out text-lg font-medium tracking-wide mb-0",
           ].join(" ")}
         >
           {menu.map((item) => {
-            // Pai fica ativo se: o slug atual é o dele OU algum descendente tem o slug atual
             const isParentActive =
               activeSlug === item.slug ||
               hasDescendantWithSlug(item, activeSlug);
@@ -146,7 +176,6 @@ const Menu = forwardRef(function Menu(_, ref) {
                   >
                     {item.children.map((child) => {
                       const isChildActive = activeSlug === child.slug;
-
                       return (
                         <li key={child.id} className="list-none">
                           <a
