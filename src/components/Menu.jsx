@@ -86,15 +86,20 @@ const Menu = forwardRef(function Menu(_, ref) {
               ? "block fixed top-[72px] left-0 w-full h-[calc(100vh-72px)] bg-[#f9fafc] overflow-y-auto shadow-md z-40 animate-slide-down pb-10"
               : "hidden",
             "md:static md:flex md:items-center md:gap-8 md:bg-transparent md:shadow-none md:z-auto",
-            "overflow-hidden transition-all duration-500 ease-in-out text-lg font-medium tracking-wide mb-0",
+            // 🔹 Corrigido: overflow agora é visível para mostrar hover underline
+            "overflow-visible transition-all duration-500 ease-in-out text-lg font-medium tracking-wide mb-0",
           ].join(" ")}
         >
           {menu.map((item) => (
-            <li key={item.id} className="group relative md:py-2 list-none mb-0">
+            <li
+              key={item.id}
+              className="group relative md:py-2 list-none mb-0 overflow-visible"
+            >
               <a
                 href={`#/${item.slug}`}
                 onClick={() => setOpen(false)}
-                className="relative block py-3 px-6 md:px-0 text-[#0a4f7d] hover:text-[#0b74b6] hover:scale-[1.02] transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-1 after:w-0 after:h-[2px] after:bg-[#0b74b6]/50 hover:after:w-full after:transition-all after:duration-300"
+                className="relative block py-3 px-6 md:px-0 text-[#0a4f7d] hover:text-[#0b74b6] hover:scale-[1.02] transition-all duration-300 
+                after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-[#0b74b6] hover:after:w-full after:transition-all after:duration-300"
                 dangerouslySetInnerHTML={{ __html: item.title.rendered }}
               />
 
